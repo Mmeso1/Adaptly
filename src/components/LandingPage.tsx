@@ -1,4 +1,16 @@
-import { ArrowRight, Globe, MessageCircle, FileCheck, Sparkles, Upload, Zap, Shield, Github, Linkedin, Twitter } from 'lucide-react';
+import {
+  ArrowRight,
+  Globe,
+  MessageCircle,
+  FileCheck,
+  Sparkles,
+  Upload,
+  Zap,
+  Shield,
+  Github,
+  Linkedin,
+  Twitter,
+} from "lucide-react";
 
 interface LandingPageProps {
   onGetStarted: () => void;
@@ -33,7 +45,9 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
             <Sparkles className="w-4 h-4 text-blue-400" />
-            <span className="text-sm text-white/70">Your AI language companion</span>
+            <span className="text-sm text-white/70">
+              Powered by Gemini Nano
+            </span>
           </div>
 
           {/* Headline */}
@@ -60,9 +74,9 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
               Get started
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="px-8 py-4 bg-white/5 text-white rounded-full font-medium hover:bg-white/10 transition-all border border-white/10">
+            {/* <button className="px-8 py-4 bg-white/5 text-white rounded-full font-medium hover:bg-white/10 transition-all border border-white/10">
               See how it works
-            </button>
+            </button> */}
           </div>
 
           {/* Demo Preview */}
@@ -108,13 +122,17 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
       {/* How It Works Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-32">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-extralight mb-4">How it works</h2>
-          <p className="text-white/50 text-lg font-light">Three simple steps to understanding any document</p>
+          <h2 className="text-4xl md:text-5xl font-extralight mb-4">
+            How it works
+          </h2>
+          <p className="text-white/50 text-lg font-light">
+            Three simple steps to understanding any document
+          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-12 relative">
           {/* Connection lines */}
-          <div className="hidden md:block absolute top-24 left-[16.6%] right-[16.6%] h-px bg-gradient-to-r from-blue-500/50 via-emerald-500/50 to-purple-500/50" />
+          {/* <div className="hidden md:block absolute top-24 left-[16.6%] right-[16.6%] h-px bg-gradient-to-r from-blue-500/50 via-emerald-500/50 to-purple-500/50" /> */}
 
           {/* Step 1 */}
           <div className="relative">
@@ -123,12 +141,15 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 <div className="w-20 h-20 rounded-2xl bg-[#111111] border border-white/10 flex items-center justify-center relative z-10">
                   <Upload className="w-10 h-10 text-blue-400" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-sm font-medium">1</div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-sm font-medium">
+                  1
+                </div>
               </div>
               <div className="space-y-3">
                 <h3 className="text-xl font-medium">Upload Document</h3>
                 <p className="text-white/50 font-light leading-relaxed">
-                  Drop any document or paste text in any language. We support PDFs, images, and more.
+                  Drop any document or paste text in any language. We support
+                  PDFs, images, and more.
                 </p>
               </div>
               {/* Mock screen */}
@@ -150,12 +171,15 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 <div className="w-20 h-20 rounded-2xl bg-[#111111] border border-white/10 flex items-center justify-center relative z-10">
                   <Sparkles className="w-10 h-10 text-emerald-400" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-sm font-medium">2</div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-sm font-medium">
+                  2
+                </div>
               </div>
               <div className="space-y-3">
                 <h3 className="text-xl font-medium">AI Analysis</h3>
                 <p className="text-white/50 font-light leading-relaxed">
-                  Our AI instantly analyzes and translates your document with contextual understanding.
+                  Our AI instantly analyzes and translates your document with
+                  contextual understanding.
                 </p>
               </div>
               {/* Mock screen */}
@@ -182,12 +206,15 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 <div className="w-20 h-20 rounded-2xl bg-[#111111] border border-white/10 flex items-center justify-center relative z-10">
                   <MessageCircle className="w-10 h-10 text-purple-400" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-lg bg-purple-500 flex items-center justify-center text-sm font-medium">3</div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-lg bg-purple-500 flex items-center justify-center text-sm font-medium">
+                  3
+                </div>
               </div>
               <div className="space-y-3">
                 <h3 className="text-xl font-medium">Get Results</h3>
                 <p className="text-white/50 font-light leading-relaxed">
-                  Receive clear summaries, full translations, and actionable insights instantly.
+                  Receive clear summaries, full translations, and actionable
+                  insights instantly.
                 </p>
               </div>
               {/* Mock screen */}
@@ -217,8 +244,12 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
       {/* Features Grid */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 pb-32">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-extralight mb-4">Powerful features</h2>
-          <p className="text-white/50 text-lg font-light">Everything you need to navigate foreign languages</p>
+          <h2 className="text-4xl md:text-5xl font-extralight mb-4">
+            Powerful features
+          </h2>
+          <p className="text-white/50 text-lg font-light">
+            Everything you need to navigate foreign languages
+          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
@@ -229,7 +260,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             </div>
             <h3 className="text-xl font-medium mb-3">Instant Understanding</h3>
             <p className="text-white/50 leading-relaxed font-light">
-              Upload any document and get a clear summary in your language. No more confusion or misunderstandings.
+              Upload any document and get a clear summary in your language. No
+              more confusion or misunderstandings.
             </p>
           </div>
 
@@ -240,7 +272,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             </div>
             <h3 className="text-xl font-medium mb-3">Contextual Chat</h3>
             <p className="text-white/50 leading-relaxed font-light">
-              Ask questions about your document and get instant, accurate answers with full context.
+              Ask questions about your document and get instant, accurate
+              answers with full context.
             </p>
           </div>
 
@@ -251,7 +284,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             </div>
             <h3 className="text-xl font-medium mb-3">Action Guidance</h3>
             <p className="text-white/50 leading-relaxed font-light">
-              Get clear recommendations on what to do next, from replying to taking specific actions.
+              Get clear recommendations on what to do next, from replying to
+              taking specific actions.
             </p>
           </div>
 
@@ -262,7 +296,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             </div>
             <h3 className="text-xl font-medium mb-3">Lightning Fast</h3>
             <p className="text-white/50 leading-relaxed font-light">
-              Get results in seconds, not minutes. Our AI processes documents instantly for immediate understanding.
+              Get results in seconds, not minutes. Our AI processes documents
+              instantly for immediate understanding.
             </p>
           </div>
 
@@ -273,7 +308,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             </div>
             <h3 className="text-xl font-medium mb-3">Secure & Private</h3>
             <p className="text-white/50 leading-relaxed font-light">
-              Your documents are encrypted and never stored. Privacy and security are our top priorities.
+              Your documents are encrypted and never stored. Privacy and
+              security are our top priorities.
             </p>
           </div>
 
@@ -284,7 +320,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             </div>
             <h3 className="text-xl font-medium mb-3">100+ Languages</h3>
             <p className="text-white/50 leading-relaxed font-light">
-              Support for over 100 languages with auto-detection. From Spanish to Mandarin, we've got you covered.
+              Support for over 100 languages with auto-detection. From Spanish
+              to Mandarin, we've got you covered.
             </p>
           </div>
         </div>
@@ -293,8 +330,12 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
       {/* Technology Stack Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-32">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-extralight mb-4">Powered by cutting-edge technology</h2>
-          <p className="text-white/50 text-lg font-light">Built with modern tools for reliability and performance</p>
+          <h2 className="text-4xl md:text-5xl font-extralight mb-4">
+            Powered by cutting-edge technology
+          </h2>
+          <p className="text-white/50 text-lg font-light">
+            Built with modern tools for reliability and performance
+          </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -302,9 +343,24 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           <div className="p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all text-center">
             <div className="w-16 h-16 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
               <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="currentColor" className="text-blue-400" opacity="0.5"/>
-                <path d="M2 17L12 22L22 17" stroke="currentColor" className="text-blue-400" strokeWidth="2"/>
-                <path d="M2 12L12 17L22 12" stroke="currentColor" className="text-blue-400" strokeWidth="2"/>
+                <path
+                  d="M12 2L2 7L12 12L22 7L12 2Z"
+                  fill="currentColor"
+                  className="text-blue-400"
+                  opacity="0.5"
+                />
+                <path
+                  d="M2 17L12 22L22 17"
+                  stroke="currentColor"
+                  className="text-blue-400"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M2 12L12 17L22 12"
+                  stroke="currentColor"
+                  className="text-blue-400"
+                  strokeWidth="2"
+                />
               </svg>
             </div>
             <h3 className="text-sm font-medium text-white/70">React</h3>
@@ -314,8 +370,22 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           <div className="p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all text-center">
             <div className="w-16 h-16 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
               <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none">
-                <rect x="6" y="6" width="12" height="12" fill="currentColor" className="text-emerald-400" opacity="0.5"/>
-                <circle cx="12" cy="12" r="4" fill="currentColor" className="text-emerald-400"/>
+                <rect
+                  x="6"
+                  y="6"
+                  width="12"
+                  height="12"
+                  fill="currentColor"
+                  className="text-emerald-400"
+                  opacity="0.5"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="4"
+                  fill="currentColor"
+                  className="text-emerald-400"
+                />
               </svg>
             </div>
             <h3 className="text-sm font-medium text-white/70">Supabase</h3>
@@ -333,9 +403,25 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
           <div className="p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all text-center">
             <div className="w-16 h-16 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto mb-4">
               <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" stroke="currentColor" className="text-blue-400" strokeWidth="2" fill="none"/>
-                <path d="M12 7V17" stroke="currentColor" className="text-blue-400" strokeWidth="2"/>
-                <path d="M7 10L17 10" stroke="currentColor" className="text-blue-400" strokeWidth="2"/>
+                <path
+                  d="M12 2L3 7V17L12 22L21 17V7L12 2Z"
+                  stroke="currentColor"
+                  className="text-blue-400"
+                  strokeWidth="2"
+                  fill="none"
+                />
+                <path
+                  d="M12 7V17"
+                  stroke="currentColor"
+                  className="text-blue-400"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M7 10L17 10"
+                  stroke="currentColor"
+                  className="text-blue-400"
+                  strokeWidth="2"
+                />
               </svg>
             </div>
             <h3 className="text-sm font-medium text-white/70">TypeScript</h3>
@@ -346,8 +432,12 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
       {/* Team Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-32">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-extralight mb-4">Meet the team</h2>
-          <p className="text-white/50 text-lg font-light">Passionate about breaking language barriers</p>
+          <h2 className="text-4xl md:text-5xl font-extralight mb-4">
+            Meet the team
+          </h2>
+          <p className="text-white/50 text-lg font-light">
+            Passionate about breaking language barriers
+          </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -360,7 +450,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 <p className="text-sm text-white/40">Founder & CEO</p>
               </div>
               <p className="text-white/50 text-sm font-light leading-relaxed">
-                Former expat with a passion for making international transitions smoother for everyone.
+                Former expat with a passion for making international transitions
+                smoother for everyone.
               </p>
               <div className="flex items-center justify-center gap-3 pt-2">
                 <button className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors">
@@ -382,7 +473,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 <p className="text-sm text-white/40">CTO</p>
               </div>
               <p className="text-white/50 text-sm font-light leading-relaxed">
-                AI researcher specializing in natural language processing and machine translation.
+                AI researcher specializing in natural language processing and
+                machine translation.
               </p>
               <div className="flex items-center justify-center gap-3 pt-2">
                 <button className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors">
@@ -404,7 +496,8 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
                 <p className="text-sm text-white/40">Head of Design</p>
               </div>
               <p className="text-white/50 text-sm font-light leading-relaxed">
-                International student turned designer, creating intuitive experiences for global users.
+                International student turned designer, creating intuitive
+                experiences for global users.
               </p>
               <div className="flex items-center justify-center gap-3 pt-2">
                 <button className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors">
@@ -424,9 +517,12 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-emerald-500/20 blur-3xl" />
           <div className="relative p-16 rounded-3xl bg-[#111111] border border-white/10 text-center space-y-6">
-            <h2 className="text-4xl md:text-5xl font-extralight">Ready to get started?</h2>
+            <h2 className="text-4xl md:text-5xl font-extralight">
+              Ready to get started?
+            </h2>
             <p className="text-white/60 text-lg font-light max-w-2xl mx-auto">
-              Join thousands of migrants, expats, and students who trust Adaptly to navigate foreign documents with confidence.
+              Join thousands of migrants, expats, and students who trust Adaptly
+              to navigate foreign documents with confidence.
             </p>
             <button
               onClick={onGetStarted}
@@ -446,9 +542,15 @@ export default function LandingPage({ onGetStarted }: LandingPageProps) {
             Helping you navigate the world, one document at a time.
           </p>
           <div className="flex items-center gap-8 text-sm text-white/40">
-            <button className="hover:text-white/60 transition-colors">Privacy</button>
-            <button className="hover:text-white/60 transition-colors">Terms</button>
-            <button className="hover:text-white/60 transition-colors">Contact</button>
+            <button className="hover:text-white/60 transition-colors">
+              Privacy
+            </button>
+            <button className="hover:text-white/60 transition-colors">
+              Terms
+            </button>
+            <button className="hover:text-white/60 transition-colors">
+              Contact
+            </button>
           </div>
         </div>
       </footer>
