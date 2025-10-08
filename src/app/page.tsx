@@ -2,16 +2,13 @@ import {
   ArrowRight,
   Globe,
   MessageCircle,
-  FileCheck,
   Sparkles,
   Upload,
-  Zap,
-  Shield,
-  Github,
-  Linkedin,
-  Twitter,
 } from "lucide-react";
 import Link from "next/link";
+import React from "react";
+import FeaturesGrid from "@/components/ui/homeFeatureSection/FeaturesGrid";
+import TeamGrid from "@/components/ui/homeTeamSection/TeamGrid";
 
 export default function Home() {
   return (
@@ -29,7 +26,7 @@ export default function Home() {
           <span className="text-2xl font-light tracking-tight">Adaptly</span>
         </div>
         <Link
-          href="/workSpace"
+          href="/workspace"
           // onClick={onGetStarted}
           className="px-5 py-2 text-sm text-white/80 hover:text-white transition-colors"
         >
@@ -65,13 +62,13 @@ export default function Home() {
 
           {/* CTA Buttons */}
           <div className="flex items-center justify-center gap-4 pt-6">
-            <button
-              // onClick={onGetStarted}
+            <Link
+              href="/workspace"
               className="group px-8 py-4 bg-white text-black rounded-full font-medium hover:bg-white/90 transition-all flex items-center gap-2 shadow-xl shadow-white/10"
             >
               Get started
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
             {/* <button className="px-8 py-4 bg-white/5 text-white rounded-full font-medium hover:bg-white/10 transition-all border border-white/10">
               See how it works
             </button> */}
@@ -240,90 +237,7 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-32">
-        <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-extralight mb-4">
-            Powerful features
-          </h2>
-          <p className="text-white/50 text-lg font-light">
-            Everything you need to navigate foreign languages
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Feature 1 */}
-          <div className="group p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all hover:shadow-xl hover:shadow-blue-500/5">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6">
-              <Globe className="w-6 h-6 text-blue-400" />
-            </div>
-            <h3 className="text-xl font-medium mb-3">Instant Understanding</h3>
-            <p className="text-white/50 leading-relaxed font-light">
-              Upload any document and get a clear summary in your language. No
-              more confusion or misunderstandings.
-            </p>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="group p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all hover:shadow-xl hover:shadow-emerald-500/5">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
-              <MessageCircle className="w-6 h-6 text-emerald-400" />
-            </div>
-            <h3 className="text-xl font-medium mb-3">Contextual Chat</h3>
-            <p className="text-white/50 leading-relaxed font-light">
-              Ask questions about your document and get instant, accurate
-              answers with full context.
-            </p>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="group p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all hover:shadow-xl hover:shadow-purple-500/5">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6">
-              <FileCheck className="w-6 h-6 text-purple-400" />
-            </div>
-            <h3 className="text-xl font-medium mb-3">Action Guidance</h3>
-            <p className="text-white/50 leading-relaxed font-light">
-              Get clear recommendations on what to do next, from replying to
-              taking specific actions.
-            </p>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="group p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all hover:shadow-xl hover:shadow-blue-500/5">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mb-6">
-              <Zap className="w-6 h-6 text-blue-400" />
-            </div>
-            <h3 className="text-xl font-medium mb-3">Lightning Fast</h3>
-            <p className="text-white/50 leading-relaxed font-light">
-              Get results in seconds, not minutes. Our AI processes documents
-              instantly for immediate understanding.
-            </p>
-          </div>
-
-          {/* Feature 5 */}
-          <div className="group p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all hover:shadow-xl hover:shadow-emerald-500/5">
-            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
-              <Shield className="w-6 h-6 text-emerald-400" />
-            </div>
-            <h3 className="text-xl font-medium mb-3">Secure & Private</h3>
-            <p className="text-white/50 leading-relaxed font-light">
-              Your documents are encrypted and never stored. Privacy and
-              security are our top priorities.
-            </p>
-          </div>
-
-          {/* Feature 6 */}
-          <div className="group p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all hover:shadow-xl hover:shadow-purple-500/5">
-            <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mb-6">
-              <Globe className="w-6 h-6 text-purple-400" />
-            </div>
-            <h3 className="text-xl font-medium mb-3">100+ Languages</h3>
-            <p className="text-white/50 leading-relaxed font-light">
-              Support for over 100 languages with auto-detection. From Spanish
-              to Mandarin, we&apos;ve got you covered.
-            </p>
-          </div>
-        </div>
-      </section>
+      <FeaturesGrid />
 
       {/* Technology Stack Section */}
       <section className="relative z-10 max-w-7xl mx-auto px-6 py-32">
@@ -438,76 +352,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {/* Team Member 1 */}
-          <div className="group">
-            <div className="p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all text-center space-y-4">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-blue-500 to-emerald-500 mx-auto" />
-              <div>
-                <h3 className="text-lg font-medium">Sarah Chen</h3>
-                <p className="text-sm text-white/40">Founder & CEO</p>
-              </div>
-              <p className="text-white/50 text-sm font-light leading-relaxed">
-                Former expat with a passion for making international transitions
-                smoother for everyone.
-              </p>
-              <div className="flex items-center justify-center gap-3 pt-2">
-                <button className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors">
-                  <Twitter className="w-4 h-4" />
-                </button>
-                <button className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors">
-                  <Linkedin className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Team Member 2 */}
-          <div className="group">
-            <div className="p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all text-center space-y-4">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 mx-auto" />
-              <div>
-                <h3 className="text-lg font-medium">Marcus Rodriguez</h3>
-                <p className="text-sm text-white/40">CTO</p>
-              </div>
-              <p className="text-white/50 text-sm font-light leading-relaxed">
-                AI researcher specializing in natural language processing and
-                machine translation.
-              </p>
-              <div className="flex items-center justify-center gap-3 pt-2">
-                <button className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors">
-                  <Github className="w-4 h-4" />
-                </button>
-                <button className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors">
-                  <Linkedin className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Team Member 3 */}
-          <div className="group">
-            <div className="p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all text-center space-y-4">
-              <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-emerald-500 to-blue-500 mx-auto" />
-              <div>
-                <h3 className="text-lg font-medium">Yuki Tanaka</h3>
-                <p className="text-sm text-white/40">Head of Design</p>
-              </div>
-              <p className="text-white/50 text-sm font-light leading-relaxed">
-                International student turned designer, creating intuitive
-                experiences for global users.
-              </p>
-              <div className="flex items-center justify-center gap-3 pt-2">
-                <button className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors">
-                  <Twitter className="w-4 h-4" />
-                </button>
-                <button className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors">
-                  <Linkedin className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <TeamGrid />
       </section>
 
       {/* CTA Section */}
