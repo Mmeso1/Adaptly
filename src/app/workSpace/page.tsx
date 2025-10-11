@@ -12,9 +12,9 @@ import {
   ChevronDown,
   ChevronUp,
   MessageSquare,
-  X,
-  Send,
 } from "lucide-react";
+import Link from "next/link";
+import ChatDrawer from "@/components/chatbot/ChatDrawer";
 
 export default function WorkspacePage() {
   const [inputText, setInputText] = useState("");
@@ -23,10 +23,6 @@ export default function WorkspacePage() {
   const [sourceExpanded, setSourceExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
-  const [chatMessage, setChatMessage] = useState("");
-  const [chatHistory, setChatHistory] = useState<
-    Array<{ role: "user" | "assistant"; content: string }>
-  >([]);
 
   const handleCopy = () => {
     setCopied(true);
@@ -38,21 +34,6 @@ export default function WorkspacePage() {
     setSourceExpanded(false);
   };
 
-  const handleSendMessage = () => {
-    if (!chatMessage.trim()) return;
-
-    setChatHistory([
-      ...chatHistory,
-      { role: "user", content: chatMessage },
-      {
-        role: "assistant",
-        content:
-          "This is a sample response. The AI will answer questions about your document here.",
-      },
-    ]);
-    setChatMessage("");
-  };
-
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white">
       {/* Subtle gradient overlay */}
@@ -62,12 +43,12 @@ export default function WorkspacePage() {
       <header className="sticky top-0 z-20 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button
-              //   onClick={onBack}
+            <Link
+              href="/"
               className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-center"
             >
               <ArrowLeft className="w-4 h-4" />
-            </button>
+            </Link>
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-emerald-400 rounded-md rotate-6" />
@@ -89,9 +70,9 @@ export default function WorkspacePage() {
               <MessageSquare className="w-4 h-4" />
               <span className="text-sm">Ask questions</span>
             </button>
-            <button className="text-sm text-white/60 hover:text-white/80 transition-colors">
+            {/* <button className="text-sm text-white/60 hover:text-white/80 transition-colors">
               History
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
@@ -336,92 +317,7 @@ export default function WorkspacePage() {
         </main>
 
         {/* Chat Drawer */}
-        <aside
-          className={`fixed right-0 top-0 h-screen w-96 bg-[#0A0A0A] border-l border-white/10 transform transition-transform duration-300 z-30 ${
-            chatOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <div className="flex flex-col h-full">
-            {/* Chat Header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-blue-400" />
-                </div>
-                <div>
-                  <h3 className="font-medium">Ask questions</h3>
-                  <p className="text-xs text-white/40">About your document</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setChatOpen(false)}
-                className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
-              {chatHistory.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
-                    <MessageSquare className="w-8 h-8 text-white/30" />
-                  </div>
-                  <p className="text-white/40 text-sm font-light">
-                    Ask me anything about your document
-                  </p>
-                </div>
-              ) : (
-                chatHistory.map((message, index) => (
-                  <div
-                    key={index}
-                    className={`flex gap-3 ${
-                      message.role === "user" ? "justify-end" : "justify-start"
-                    }`}
-                  >
-                    {message.role === "assistant" && (
-                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
-                        <Sparkles className="w-4 h-4 text-blue-400" />
-                      </div>
-                    )}
-                    <div
-                      className={`max-w-[75%] px-4 py-3 rounded-2xl ${
-                        message.role === "user"
-                          ? "bg-blue-500 text-white"
-                          : "bg-white/5 border border-white/10 text-white/80"
-                      }`}
-                    >
-                      <p className="text-sm font-light leading-relaxed">
-                        {message.content}
-                      </p>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
-            {/* Chat Input */}
-            <div className="px-6 py-4 border-t border-white/10">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={chatMessage}
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                  placeholder="Ask a question..."
-                  className="flex-1 px-4 py-3 bg-[#111111] border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white/90 placeholder:text-white/30 text-sm font-light"
-                />
-                <button
-                  onClick={handleSendMessage}
-                  className="w-12 h-12 rounded-xl bg-blue-500 hover:bg-blue-600 flex items-center justify-center transition-colors flex-shrink-0"
-                >
-                  <Send className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </aside>
+        <ChatDrawer isOpen={chatOpen} onClose={() => setChatOpen(false)} />
       </div>
     </div>
   );
