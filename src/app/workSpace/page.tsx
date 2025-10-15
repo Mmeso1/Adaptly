@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { parseTxtFile, parsePdfFile, parseDocxFile } from "@/lib/fileParsers";
+import { processDocument } from "@/lib/understand";
 import {
   Upload,
   ArrowLeft,
@@ -23,14 +25,75 @@ export default function WorkspacePage() {
   const [sourceExpanded, setSourceExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [detectedLang, setDetectedLang] = useState<string | null>(null);
 
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleUnderstand = () => {
+  const handleFileUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setInputText: (text: string) => void,
+    setFileName: (name: string) => void
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const fileName = file.name.toLowerCase();
+    const fileType = file.type;
+    setFileName(file.name);
+
+    console.log("Uploading:", fileName, "Type:", fileType);
+
+    try {
+      let text = "";
+
+      if (fileType === "text/plain" || fileName.endsWith(".txt")) {
+        text = await parseTxtFile(file);
+      } else if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
+        text = await parsePdfFile(file);
+      } else if (
+        fileType ===
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        fileName.endsWith(".docx")
+      ) {
+        text = await parseDocxFile(file);
+      } else if (fileName.endsWith(".doc")) {
+        alert("Legacy .doc files are not supported. Please convert to .docx.");
+        return;
+      } else if (fileType.startsWith("image/")) {
+        alert("OCR for images is coming soon. Please upload text or PDFs.");
+        return;
+      } else {
+        alert("Unsupported file type. Please use PDF, DOCX, or TXT files.");
+        return;
+      }
+
+      if (text.trim()) {
+        setInputText(text);
+        console.log("Extracted:", text.substring(0, 200) + "...");
+      } else {
+        alert("No readable text found in this file.");
+      }
+    } catch (err) {
+      console.error("File parsing failed:", err);
+      alert("Failed to extract text. Try another file format.");
+    }
+  };
+
+  const handleUnderstand = async () => {
+    if (!inputText.trim() && !fileName)
+      return alert("Please upload a document or paste text.");
     setShowResults(true);
+    setLoading(true);
+
+    const result = await processDocument(inputText);
+    if (result) {
+      setDetectedLang(result.sourceLang);
+    }
+    setLoading(false);
     setSourceExpanded(false);
   };
 
@@ -95,11 +158,11 @@ export default function WorkspacePage() {
                     type="file"
                     className="hidden"
                     id="file-upload"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) setFileName(file.name);
-                    }}
+                    onChange={(e) =>
+                      handleFileUpload(e, setInputText, setFileName)
+                    }
                   />
+                  {fileName && <p>Uploaded: {fileName}</p>}
                   <label
                     htmlFor="file-upload"
                     className="block p-12 rounded-2xl border-2 border-dashed border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.04] transition-all cursor-pointer"
