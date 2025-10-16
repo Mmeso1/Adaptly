@@ -26,7 +26,11 @@ export default function WorkspacePage() {
   const [copied, setCopied] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [detectedLang, setDetectedLang] = useState<string | null>(null);
+  const [translatedLang, setTranslatedLang] = useState<string | null>(null);
+  const [summary, setSummary] = useState<string | null>(null);
+  const [translatedSummary, setTranslatedSummary] = useState<string | null>(
+    null
+  );
 
   const handleCopy = () => {
     setCopied(true);
@@ -91,7 +95,11 @@ export default function WorkspacePage() {
 
     const result = await processDocument(inputText);
     if (result) {
-      setDetectedLang(result.sourceLang);
+      setTranslatedLang(result.translatedLang);
+      setSummary(result.summaryEnglish);
+      setTranslatedSummary(result.summary);
+      console.log("summary", summary);
+      console.log("AI translated Summary Result:", result.summary);
     }
     setLoading(false);
     setSourceExpanded(false);

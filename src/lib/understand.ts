@@ -1,6 +1,6 @@
 import { detectLanguage } from "./ai/detectLanguage";
-// import { translateText } from "./ai/translate";
-// import { summarizeText } from "./ai/summarize";
+import { translateText } from "./ai/translate";
+import { summarizeText } from "./ai/summarize";
 // import { generateProTips } from "./ai/generateTips";
 
 export async function processDocument(text: string, userLang: string = "en") {
@@ -20,26 +20,39 @@ export async function processDocument(text: string, userLang: string = "en") {
   };
 
   // 1. Detect Language
-  const sourceLang = await safeCall(() => detectLanguage(text));
+  const detectedLang = await safeCall(() => detectLanguage(text));
+  const sourceLang = detectedLang || "en";
   console.log("Detected language:", sourceLang);
 
-  // let workingText = text;
-  // if (sourceLang !== "en") {
-  //   workingText = await translateText(text, sourceLang, "en");
-  // }
+  let workingText = text;
+  if (sourceLang !== "en") {
+    const translated = await safeCall(() =>
+      translateText(text, sourceLang, "en")
+    );
+    workingText = translated || text;
+    // console.log("Translated txt:", workingText);
+  }
 
-  // const summary = await summarizeText(workingText);
+  // 2. Summarize with null checking
+  const summaryResult = await safeCall(() => summarizeText(workingText));
+  const summary = summaryResult || "Unable to generate summary";
 
-  // let translatedSummary = summary;
-  // if (userLang !== "en") {
-  //   translatedSummary = await translateText(summary, "en", userLang);
-  // }
+  // 3. Translate summary if needed (now summary is guaranteed to be a string)
+  let translatedSummary = summary;
+  if (userLang !== "en") {
+    const translatedResult = await safeCall(() =>
+      translateText(summary, "en", (userLang = "fr"))
+    );
+    translatedSummary = translatedResult || summary; // Fallback to original summary
+  }
 
   // const proTips = await generateProTips(translatedSummary, userLang);
 
   return {
     sourceLang,
-    // summary: translatedSummary,
+    translatedLang: workingText,
+    summaryEnglish: summary,
+    summary: translatedSummary,
     // proTips,
   };
 }
