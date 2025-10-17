@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import ChatDrawer from "@/components/chatbot/ChatDrawer";
+import ReactMarkdown from "react-markdown";
 
 export default function WorkspacePage() {
   const [inputText, setInputText] = useState("");
@@ -101,9 +102,6 @@ export default function WorkspacePage() {
       console.log("action plan in workspace.tsx: ", result.planEnglish);
       console.log("pro tips in workspace.tsx: ", result.tipsEnglish);
     }
-    console.log("translated lan: ", translatedLang);
-    console.log("action plan: ", actionPlan);
-    console.log("pro tips: ", proTips);
     setLoading(false);
     setSourceExpanded(false);
   };
@@ -321,12 +319,24 @@ export default function WorkspacePage() {
                   </div>
                 </div>
                 <div className="p-6 rounded-xl bg-blue-500/5 border border-blue-500/10">
-                  <p className="text-white/70 leading-relaxed font-light">
-                    This is where your AI-generated summary will appear. It will
-                    provide a clear, concise explanation of the document&pos;s
-                    contents, highlighting important details and any actions you
-                    need to take.
-                  </p>
+                  {/* <p className="text-white/70 leading-relaxed font-light"></p> */}
+                  {loading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-white/60">
+                        Generating action plan...
+                      </span>
+                    </div>
+                  ) : actionPlan ? (
+                    <div className="prose prose-invert prose-sm max-w-none prose-headings:text-white prose-p:text-white/70 prose-strong:text-white prose-ul:text-white/70 prose-li:text-white/70">
+                      <ReactMarkdown>{actionPlan}</ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="text-white/50 italic">
+                      No action plan generated yet. Click "Understand" to
+                      analyze your document.
+                    </p>
+                  )}
                 </div>
               </div>
 
