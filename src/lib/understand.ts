@@ -1,58 +1,84 @@
 import { detectLanguage } from "./ai/detectLanguage";
-import { translateText } from "./ai/translate";
-import { summarizeText } from "./ai/summarize";
-// import { generateProTips } from "./ai/generateTips";
+import { createTranslator, translateText } from "./ai/translate";
+import {
+  createPromptModel,
+  generateActionPlan,
+  generateProTips,
+} from "./ai/prompt";
+
+const safeCall = async <T>(fn: () => Promise<T>): Promise<T | null> => {
+  try {
+    return await fn();
+  } catch (error) {
+    console.error("AI error call:", error);
+    return null;
+  }
+};
 
 export async function processDocument(text: string, userLang: string = "en") {
-  if (!text || text.trim().length === 0) {
-    throw new Error("No text provided for processing.");
-  }
-  console.log("Start AI processing...");
-  // const sourceLang = await detectLanguage(text);
-
-  const safeCall = async <T>(fn: () => Promise<T>): Promise<T | null> => {
-    try {
-      return await fn();
-    } catch (error) {
-      console.error("AI error call:", error);
-      return null;
-    }
-  };
+  if (!text || text.trim().length === 0) throw new Error("No text provided.");
+  console.log("AI processing...");
 
   // 1. Detect Language
   const detectedLang = await safeCall(() => detectLanguage(text));
   const sourceLang = detectedLang || "en";
   console.log("Detected language:", sourceLang);
 
+  // Create both models immediately and concurrently using Promise.all().
+  const translatorPromise =
+    sourceLang !== "en"
+      ? safeCall(() => createTranslator(sourceLang, "en"))
+      : Promise.resolve(null);
+  const promptPromise = safeCall(() => createPromptModel());
+
+  const [translator, promptModel] = await Promise.all([
+    translatorPromise,
+    promptPromise,
+  ]);
+
+  if (!translator || !promptModel) {
+    throw new Error("Failed to initialize AI models.");
+  }
+
+  // 2. Translate langugae to English if not in English
   let workingText = text;
   if (sourceLang !== "en") {
-    const translated = await safeCall(() =>
-      translateText(text, sourceLang, "en")
-    );
+    const translated = await safeCall(() => translateText(text, translator));
     workingText = translated || text;
-    // console.log("Translated txt:", workingText);
+    console.log("Translated txt:", workingText);
   }
 
-  // 2. Summarize with null checking
-  const summaryResult = await safeCall(() => summarizeText(workingText));
-  const summary = summaryResult || "Unable to generate summary";
+  // 3. Action Plan Generation (Prompt API: Objective Triage)
+  // Note: generateActionPlan is instructed to output in English for stability.
+  const actionPlanEnglish = await safeCall(() =>
+    generateActionPlan(promptModel, workingText, "en")
+  );
+  // console.log("action plan from understand.ts: ", actionPlanEnglish);
+  const planEnglish =
+    actionPlanEnglish || "Unable to generate action plan. Analysis failed.";
 
-  // 3. Translate summary if needed (now summary is guaranteed to be a string)
-  let translatedSummary = summary;
-  if (userLang !== "en") {
-    const translatedResult = await safeCall(() =>
-      translateText(summary, "en", (userLang = "fr"))
-    );
-    translatedSummary = translatedResult || summary; // Fallback to original summary
-  }
+  // 4. Pro-Tips Generation (Prompt API: Creative Guidance)
+  // Note: generateProTips is instructed to output in English for stability.
+  const proTipsEnglish = await safeCall(() =>
+    generateProTips(promptModel, workingText, "en")
+  );
+  const tipsEnglish =
+    proTipsEnglish || "Unable to generate pro tips. Guidance failed.";
 
-  // const proTips = await generateProTips(translatedSummary, userLang);
+  // 5. Final Outputs Translation (Translator API: High-speed Utility)
+  // Translate the final English outputs back to the user's target language (userLang).
+  const finalActionPlan = await safeCall(() =>
+    translateText(translator, planEnglish)
+  );
+  const finalProTips = await safeCall(() =>
+    translateText(translator, tipsEnglish)
+  );
 
   return {
     sourceLang,
     translatedLang: workingText,
-    summaryEnglish: summary,
-    summary: translatedSummary,
+    actionPlanEnglish,
+    proTipsEnglish,
     // proTips,
   };
 }

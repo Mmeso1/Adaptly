@@ -1,16 +1,21 @@
 declare const Translator: any;
 
-export async function translateText(
-  text: string,
-  sourceLang: string,
-  targetLang: string
-): Promise<string> {
+export async function createTranslator(sourceLang: string, targetLang: string) {
+  if (!("Translator" in self)) {
+    throw new Error("Translator API not available in this browser.");
+  }
+
   const translatorCapabilities = await Translator.availability({
     sourceLanguage: sourceLang,
     targetLanguage: targetLang,
   });
 
-  console.log("Translator capabilities:", translatorCapabilities);
+  if (translatorCapabilities === "unavailable") {
+    console.warn(
+      "Translator API is not ready or available:",
+      translatorCapabilities
+    );
+  }
 
   const translator = await Translator.create({
     sourceLanguage: sourceLang,
@@ -21,8 +26,13 @@ export async function translateText(
       });
     },
   });
+  return translator;
+}
+export async function translateText(
+  text: string,
+  translator: any
+): Promise<string> {
   const result = await translator.translate(text);
-  //   console.log("Translated in translate function:", result);
-  //   console.log("Translated text in tfn:", result.text);
+  //   console.log("Translated text in tfn:", result);
   return result;
 }
