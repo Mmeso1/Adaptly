@@ -53,32 +53,31 @@ export async function processDocument(text: string, userLang: string = "en") {
   const actionPlanEnglish = await safeCall(() =>
     generateActionPlan(promptModel, workingText, "en")
   );
-  // console.log("action plan from understand.ts: ", actionPlanEnglish);
   const planEnglish =
     actionPlanEnglish || "Unable to generate action plan. Analysis failed.";
 
   // 4. Pro-Tips Generation (Prompt API: Creative Guidance)
   // Note: generateProTips is instructed to output in English for stability.
   const proTipsEnglish = await safeCall(() =>
-    generateProTips(promptModel, workingText, "en")
+    generateProTips(promptModel, planEnglish, "en")
   );
   const tipsEnglish =
     proTipsEnglish || "Unable to generate pro tips. Guidance failed.";
 
   // 5. Final Outputs Translation (Translator API: High-speed Utility)
   // Translate the final English outputs back to the user's target language (userLang).
-  const finalActionPlan = await safeCall(() =>
-    translateText(translator, planEnglish)
-  );
-  const finalProTips = await safeCall(() =>
-    translateText(translator, tipsEnglish)
-  );
+  // const finalActionPlan = await safeCall(() =>
+  //   translateText(translator, planEnglish)
+  // );
+  // const finalProTips = await safeCall(() =>
+  //   translateText(translator, tipsEnglish)
+  // );
 
   return {
     sourceLang,
     translatedLang: workingText,
-    actionPlanEnglish,
-    proTipsEnglish,
+    planEnglish,
+    tipsEnglish,
     // proTips,
   };
 }

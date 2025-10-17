@@ -47,7 +47,7 @@ export default function WorkspacePage() {
     const fileType = file.type;
     setFileName(file.name);
 
-    console.log("Uploading:", fileName, "Type:", fileType);
+    // console.log("Uploading:", fileName, "Type:", fileType);
 
     try {
       let text = "";
@@ -75,7 +75,7 @@ export default function WorkspacePage() {
 
       if (text.trim()) {
         setInputText(text);
-        console.log("Extracted:", text.substring(0, 200) + "...");
+        // console.log("Extracted:", text.substring(0, 200) + "...");
       } else {
         alert("No readable text found in this file.");
       }
@@ -94,8 +94,12 @@ export default function WorkspacePage() {
     const result = await processDocument(inputText);
     if (result) {
       setTranslatedLang(result.translatedLang);
-      setActionPlan(result.actionPlanEnglish);
-      setProTips(result.proTipsEnglish);
+      setActionPlan(result.planEnglish);
+      setProTips(result.tipsEnglish);
+      console.log("result in workspace.tsx: ", result);
+      console.log("translated lang in workspace.tsx: ", result.translatedLang);
+      console.log("action plan in workspace.tsx: ", result.planEnglish);
+      console.log("pro tips in workspace.tsx: ", result.tipsEnglish);
     }
     console.log("translated lan: ", translatedLang);
     console.log("action plan: ", actionPlan);
