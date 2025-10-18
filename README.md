@@ -34,3 +34,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Fixes / Updates
+
+- Loading state when a document is uploading.
+- The dropdown select should be working. There should be language option should work. It makes sense to use a dictionary to map language to language code.
+- Loading state when understand button is clicked.
+- Aesthetically display the name of the file above the drop your document here input section.
+- Loading state in each section until detail is loaded.
+- Copy button to finally function.
+- Make the sections scrollable at a certain point.
