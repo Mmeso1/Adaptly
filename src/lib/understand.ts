@@ -19,6 +19,9 @@ export async function processDocument(text: string, userLang: string = "en") {
   if (!text || text.trim().length === 0) throw new Error("No text provided.");
   console.log("AI processing...");
 
+  // test if userLang was recieved
+  alert(userLang);
+
   // 1. Detect Language
   const detectedLang = await safeCall(() => detectLanguage(text));
   const sourceLang = detectedLang || "en";

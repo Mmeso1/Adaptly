@@ -31,6 +31,9 @@ export default function WorkspacePage() {
   const [proTips, setProTips] = useState<string | null>(null);
   const [translatedLang, setTranslatedLang] = useState<string | null>(null);
 
+  // state to track the language user intends to translate to
+  const [userLang, setUserLang] = useState<string | "en">("en");
+
   const handleCopy = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -92,7 +95,8 @@ export default function WorkspacePage() {
     setShowResults(true);
     setLoading(true);
 
-    const result = await processDocument(inputText);
+    // passing users intended language as the second prop
+    const result = await processDocument(inputText, userLang);
     if (result) {
       setTranslatedLang(result.translatedLang);
       setActionPlan(result.planEnglish);
@@ -219,28 +223,31 @@ export default function WorkspacePage() {
                     </label>
                     <select className="w-full px-5 py-3 bg-[#111111] border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white/90 appearance-none cursor-pointer hover:border-white/20 transition-colors font-light">
                       <option>Auto-detect</option>
-                      <option>Spanish</option>
-                      <option>French</option>
-                      <option>German</option>
-                      <option>Japanese</option>
-                      <option>Chinese</option>
-                      <option>Portuguese</option>
-                      <option>Italian</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
+                      <option value="de">German</option>
+                      <option value="ja">Japanese</option>
+                      <option value="zh">Chinese</option>
+                      <option value="pt">Portuguese</option>
+                      <option value="it">Italian</option>
                     </select>
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm text-white/50 mb-2 font-light">
                       Your language
                     </label>
-                    <select className="w-full px-5 py-3 bg-[#111111] border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white/90 appearance-none cursor-pointer hover:border-white/20 transition-colors font-light">
-                      <option>English</option>
-                      <option>Spanish</option>
-                      <option>French</option>
-                      <option>German</option>
-                      <option>Japanese</option>
-                      <option>Chinese</option>
-                      <option>Portuguese</option>
-                      <option>Italian</option>
+                    <select
+                      className="w-full px-5 py-3 bg-[#111111] border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white/90 appearance-none cursor-pointer hover:border-white/20 transition-colors font-light"
+                      onChange={(e) => setUserLang(e.target.value)}
+                    >
+                      <option value="en">English</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
+                      <option value="de">German</option>
+                      <option value="ja">Japanese</option>
+                      <option value="zh">Chinese</option>
+                      <option value="pt">Portuguese</option>
+                      <option value="it">Italian</option>
                     </select>
                   </div>
                   <button
@@ -333,8 +340,8 @@ export default function WorkspacePage() {
                     </div>
                   ) : (
                     <p className="text-white/50 italic">
-                      No action plan generated yet. Click "Understand" to
-                      analyze your document.
+                      No action plan generated yet. Click &quot;Understand&quot;
+                      to analyze your document.
                     </p>
                   )}
                 </div>

@@ -63,7 +63,7 @@ export default function Home() {
           {/* CTA Buttons */}
           <div className="flex items-center justify-center gap-4 pt-6">
             <Link
-              href="/workspace"
+              href="/workSpace"
               className="group px-8 py-4 bg-white text-black rounded-full font-medium hover:bg-white/90 transition-all flex items-center gap-2 shadow-xl shadow-white/10"
             >
               Get started
