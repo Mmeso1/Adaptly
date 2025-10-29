@@ -26,9 +26,9 @@ export async function createPromptModel(targetLanguage: string) {
         });
       },
       // Setting expected languages confirms the model supports our use case
-      expectedInputs: [{ type: "text", languages: ["en", "es", "ja"] }],
+      expectedInputs: [{ type: "text", languages: ["en"] }],
       // We expect the final output to be in the user's language
-      expectedOutputs: [{ type: "text", languages: ["en", "es", "ja"] }],
+      expectedOutputs: [{ type: "text", languages: [`${targetLanguage}`] }],
     });
     console.log("prompt session created:", session);
     return session;
@@ -42,15 +42,17 @@ export async function createPromptModel(targetLanguage: string) {
 // --- 2. Task: Generate Action Plan (Structured Reasoning) ---
 export async function generateActionPlan(
   promptModel: any,
-  documentText: string
+  documentText: string,
+  targetLanguage: string
 ): Promise<string> {
   const systemInstruction = `
     You are a multilingual content summarization expert.
-    Your job is to help users understand complex or foreign-language text by rewriting it in a clear, simple, and structured way — without losing important meaning in the specified target language.
+    Your job is to help users understand complex or foreign-language text by rewriting it in a clear, simple, and structured way — without losing important meaning in the specified target language.  ALL OUTPUT MUST BE IN THE LANGUAGE SPECIFIED by the outputLanguage 
+    parameter, which is ${targetLanguage}.
 
     Guidelines:
     - Summarize the document in a way that captures its **main ideas, important points, and tone**.
-    - Use **short paragraphs, bullet points, or subheadings** only when they make the content easier to read.
+    - Use only **short paragraphs, bullet points, or subheadings** only when they make the content easier to read.
     - Focus on clarity and readability for **non-native speakers**.
     - Do **not** add opinions, assumptions, or advice.
     - Maintain a **neutral, explanatory, and helpful tone**.
@@ -68,14 +70,15 @@ export async function generateActionPlan(
     systemInstruction: systemInstruction,
   });
   console.log("created action plan");
-  //   console.log("Action Plan Result:", result);
+  console.log("Action Plan Result:", result);
   return result;
 }
 
 // --- 3. Task: Generate Pro-Tips (Creative Reasoning) ---
 export async function generateProTips(
   promptModel: any,
-  documentText: string
+  documentText: string,
+  targetLanguage: string
 ): Promise<string> {
   const systemInstruction = `
     You are a supportive and encouraging communication assistant.
@@ -92,11 +95,11 @@ export async function generateProTips(
     `;
 
   // Use the previously generated Action Plan as the context for the tips
-  const userPrompt = `Based on this Action Plan, generate three separate bullet points (Pro-Tips) in the target language.\n\nACTION PLAN:\n${documentText}`;
+  const userPrompt = `Based on this Action Plan, generate three separate bullet points (Pro-Tips) in the target language: ${targetLanguage}.\n\nACTION PLAN:\n${documentText}`;
 
   const result = await promptModel.prompt(userPrompt, {
     systemInstruction: systemInstruction,
   });
-  //   console.log("Pro-Tips Result:", result);
+  console.log("Pro-Tips Result:", result);
   return result;
 }

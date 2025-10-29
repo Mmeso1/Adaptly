@@ -15,10 +15,7 @@ const safeCall = async <T>(fn: () => Promise<T>): Promise<T | null> => {
   }
 };
 
-export async function processDocument(
-  text: string,
-  userSelectedLang: string = "en"
-) {
+export async function processDocument(text: string, userSelectedLang: string) {
   if (!text || text.trim().length === 0) throw new Error("No text provided.");
   console.log("AI processing...");
 
@@ -31,36 +28,36 @@ export async function processDocument(
   console.log("Detected language:", sourceLang);
 
   // Create both models immediately and concurrently using Promise.all().
-  const translatorPromise =
-    sourceLang !== "en"
-      ? safeCall(() => createTranslator(sourceLang, "en"))
-      : Promise.resolve(null);
-  const promptPromise = safeCall(() => createPromptModel(userSelectedLang));
+  let translator = null;
+  let promptModel = null;
 
-  const [translator, promptModel] = await Promise.all([
-    translatorPromise,
-    promptPromise,
-  ]);
+  if (sourceLang !== "en") {
+    console.log("Creating translator...");
+    translator = await safeCall(() => createTranslator(sourceLang, "en"));
+    if (!translator) {
+      console.warn("Translator initialization failed — proceeding without it.");
+    }
+  }
 
-  if (!translator || !promptModel) {
-    throw new Error("Failed to initialize AI models.");
+  console.log("Creating prompt model...");
+  promptModel = await safeCall(() => createPromptModel(userSelectedLang));
+  if (!promptModel) {
+    throw new Error("Failed to initialize Prompt model.");
   }
 
   // 2. Translate langugae to English if not in English
   let workingText = text;
   console.log("detected language 2: ", sourceLang);
   if (sourceLang !== "en") {
-    console.log("B$ working txt");
     const translated = await safeCall(() => translateText(text, translator));
-    console.log("After working text");
     workingText = translated || text;
-    console.log("Translated txt:", workingText);
+    // console.log("Translated txt:", workingText);
   }
 
   // 3. Action Plan Generation (Prompt API: Objective Triage)
   // Note: generateActionPlan is instructed to output in English for stability.
   const actionPlanEnglish = await safeCall(() =>
-    generateActionPlan(promptModel, workingText)
+    generateActionPlan(promptModel, workingText, userSelectedLang)
   );
   const planEnglish =
     actionPlanEnglish || "Unable to generate action plan. Analysis failed.";
@@ -68,7 +65,7 @@ export async function processDocument(
   // 4. Pro-Tips Generation (Prompt API: Creative Guidance)
   // Note: generateProTips is instructed to output in English for stability.
   const proTipsEnglish = await safeCall(() =>
-    generateProTips(promptModel, planEnglish)
+    generateProTips(promptModel, planEnglish, userSelectedLang)
   );
   const tipsEnglish =
     proTipsEnglish || "Unable to generate pro tips. Guidance failed.";
