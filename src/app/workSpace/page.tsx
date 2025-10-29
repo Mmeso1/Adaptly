@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import ChatDrawer from "@/components/chatbot/ChatDrawer";
 import ReactMarkdown from "react-markdown";
+import LanguageSelect from "@/components/ui/languageSelect";
 
 export default function WorkspacePage() {
   const [inputText, setInputText] = useState("");
@@ -50,9 +51,6 @@ export default function WorkspacePage() {
     const fileName = file.name.toLowerCase();
     const fileType = file.type;
     setFileName(file.name);
-
-    // console.log("Uploading:", fileName, "Type:", fileType);
-
     try {
       let text = "";
 
@@ -95,16 +93,15 @@ export default function WorkspacePage() {
     setShowResults(true);
     setLoading(true);
 
-    // passing users intended language as the second prop
     const result = await processDocument(inputText, userLang);
     if (result) {
       setTranslatedLang(result.translatedLang);
       setActionPlan(result.planEnglish);
       setProTips(result.tipsEnglish);
-      console.log("result in workspace.tsx: ", result);
-      console.log("translated lang in workspace.tsx: ", result.translatedLang);
-      console.log("action plan in workspace.tsx: ", result.planEnglish);
-      console.log("pro tips in workspace.tsx: ", result.tipsEnglish);
+      // console.log("result in workspace.tsx: ", result);
+      // console.log("translated lang in workspace.tsx: ", result.translatedLang);
+      // console.log("action plan in workspace.tsx: ", result.planEnglish);
+      // console.log("pro tips in workspace.tsx: ", result.tipsEnglish);
     }
     setLoading(false);
     setSourceExpanded(false);
@@ -223,32 +220,13 @@ export default function WorkspacePage() {
                     </label>
                     <select className="w-full px-5 py-3 bg-[#111111] border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white/90 appearance-none cursor-pointer hover:border-white/20 transition-colors font-light">
                       <option>Auto-detect</option>
-                      <option value="es">Spanish</option>
-                      <option value="fr">French</option>
-                      <option value="de">German</option>
-                      <option value="ja">Japanese</option>
-                      <option value="zh">Chinese</option>
-                      <option value="pt">Portuguese</option>
-                      <option value="it">Italian</option>
                     </select>
                   </div>
                   <div className="flex-1">
                     <label className="block text-sm text-white/50 mb-2 font-light">
                       Your language
                     </label>
-                    <select
-                      className="w-full px-5 py-3 bg-[#111111] border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white/90 appearance-none cursor-pointer hover:border-white/20 transition-colors font-light"
-                      onChange={(e) => setUserLang(e.target.value)}
-                    >
-                      <option value="en">English</option>
-                      <option value="es">Spanish</option>
-                      <option value="fr">French</option>
-                      <option value="de">German</option>
-                      <option value="ja">Japanese</option>
-                      <option value="zh">Chinese</option>
-                      <option value="pt">Portuguese</option>
-                      <option value="it">Italian</option>
-                    </select>
+                    <LanguageSelect code={userLang} onChange={setUserLang} />
                   </div>
                   <button
                     onClick={handleUnderstand}

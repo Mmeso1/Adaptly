@@ -2,11 +2,12 @@ declare const LanguageModel: any;
 
 // --- 1. Model Creation (CRITICAL for User Gesture) ---
 // This function must be called immediately when the user clicks 'Analyze'.
-export async function createPromptModel() {
+export async function createPromptModel(targetLanguage: string) {
   console.log("Initializing Prompt (Gemini Nano) Model...");
   try {
     // Check availability first (optional but good practice)
     const availability = await LanguageModel.availability();
+    console.log("Prompt Model availability:", availability);
     if (availability === "unavailable") {
       throw new Error(
         "Prompt API model is unavailable or hardware requirements not met."
@@ -25,11 +26,11 @@ export async function createPromptModel() {
         });
       },
       // Setting expected languages confirms the model supports our use case
-      expectedInputs: [{ type: "text", languages: ["en"] }],
+      expectedInputs: [{ type: "text", languages: ["en", "es", "ja"] }],
       // We expect the final output to be in the user's language
-      expectedOutputs: [{ type: "text", languages: ["en", "ja", "es"] }],
+      expectedOutputs: [{ type: "text", languages: ["en", "es", "ja"] }],
     });
-    // console.log("prompt session created:", session);
+    console.log("prompt session created:", session);
     return session;
   } catch (error) {
     // If the error is NotAllowedError, it will be handled by the caller (understand.ts)
@@ -41,8 +42,7 @@ export async function createPromptModel() {
 // --- 2. Task: Generate Action Plan (Structured Reasoning) ---
 export async function generateActionPlan(
   promptModel: any,
-  documentText: string,
-  targetLanguage: string
+  documentText: string
 ): Promise<string> {
   const systemInstruction = `
     You are a multilingual content summarization expert.
@@ -54,7 +54,7 @@ export async function generateActionPlan(
     - Focus on clarity and readability for **non-native speakers**.
     - Do **not** add opinions, assumptions, or advice.
     - Maintain a **neutral, explanatory, and helpful tone**.
-    - Translate the final summary into the user’s target language (${targetLanguage}).
+    - Translate the final summary into the user’s target language.
 
     Keep the output natural and well-organized — like a professional executive summary.
     `;
@@ -75,8 +75,7 @@ export async function generateActionPlan(
 // --- 3. Task: Generate Pro-Tips (Creative Reasoning) ---
 export async function generateProTips(
   promptModel: any,
-  documentText: string,
-  targetLanguage: string
+  documentText: string
 ): Promise<string> {
   const systemInstruction = `
     You are a supportive and encouraging communication assistant.
@@ -93,7 +92,7 @@ export async function generateProTips(
     `;
 
   // Use the previously generated Action Plan as the context for the tips
-  const userPrompt = `Based on this Action Plan, generate three separate bullet points (Pro-Tips) in the target language: ${targetLanguage}.\n\nACTION PLAN:\n${documentText}`;
+  const userPrompt = `Based on this Action Plan, generate three separate bullet points (Pro-Tips) in the target language.\n\nACTION PLAN:\n${documentText}`;
 
   const result = await promptModel.prompt(userPrompt, {
     systemInstruction: systemInstruction,
