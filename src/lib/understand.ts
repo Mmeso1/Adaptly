@@ -25,7 +25,7 @@ export async function processDocument(text: string, userSelectedLang: string) {
   // 1. Detect Language
   const detectedLang = await safeCall(() => detectLanguage(text));
   const sourceLang = detectedLang || "en";
-  console.log("Detected language:", sourceLang);
+  // console.log("Detected language:", sourceLang);
 
   // Create both models immediately and concurrently using Promise.all().
   let translator = null;
@@ -72,14 +72,12 @@ export async function processDocument(text: string, userSelectedLang: string) {
 
   // 5. Final Outputs Translation (Translator API: High-speed Utility)
   // Translate the final English outputs back to the user's target language (userLang).
-  // const finalActionPlan = await safeCall(() =>
-  //   translateText(translator, planEnglish)
-  // );
-  // const finalProTips = await safeCall(() =>
-  //   translateText(translator, tipsEnglish)
-  // );
+  const finalActionPlan = await safeCall(() =>
+    translateText(translator, workingText)
+  );
 
   return {
+    workingText,
     sourceLang,
     translatedLang: workingText,
     planEnglish,

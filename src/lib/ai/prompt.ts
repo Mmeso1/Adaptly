@@ -30,7 +30,7 @@ export async function createPromptModel(targetLanguage: string) {
       // We expect the final output to be in the user's language
       expectedOutputs: [{ type: "text", languages: [`${targetLanguage}`] }],
     });
-    console.log("prompt session created:", session);
+    // console.log("prompt session created:", session);
     return session;
   } catch (error) {
     // If the error is NotAllowedError, it will be handled by the caller (understand.ts)
@@ -69,8 +69,8 @@ export async function generateActionPlan(
   const result = await promptModel.prompt(userPrompt, {
     systemInstruction: systemInstruction,
   });
-  console.log("created action plan");
-  console.log("Action Plan Result:", result);
+  // console.log("created action plan");
+  // console.log("Action Plan Result:", result);
   return result;
 }
 
@@ -100,6 +100,6 @@ export async function generateProTips(
   const result = await promptModel.prompt(userPrompt, {
     systemInstruction: systemInstruction,
   });
-  console.log("Pro-Tips Result:", result);
+  // console.log("Pro-Tips Result:", result);
   return result;
 }

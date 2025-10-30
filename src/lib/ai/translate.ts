@@ -1,3 +1,5 @@
+import { text } from "stream/consumers";
+
 declare const Translator: any;
 
 export async function createTranslator(sourceLang: string, targetLang: string) {
@@ -28,6 +30,7 @@ export async function createTranslator(sourceLang: string, targetLang: string) {
   });
   return translator;
 }
+
 export async function translateText(
   text: string,
   translator: any
@@ -35,4 +38,23 @@ export async function translateText(
   const result = await translator.translate(text);
   //   console.log("Translated text in tfn:", result);
   return result;
+}
+
+export async function translateFullDocument(
+  text: string,
+  sourceLang: string,
+  targetLang: string
+): Promise<string | null> {
+  if (sourceLang === targetLang) {
+    return text;
+  }
+
+  try {
+    const documentTranslator = await createTranslator(sourceLang, targetLang);
+    const translated = await documentTranslator.translate(text);
+    return translated;
+  } catch (error) {
+    console.error("Failed to translate full document:", error);
+    return null;
+  }
 }

@@ -14,11 +14,13 @@ import {
   ChevronDown,
   ChevronUp,
   MessageSquare,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import ChatDrawer from "@/components/chatbot/ChatDrawer";
 import ReactMarkdown from "react-markdown";
 import LanguageSelect from "@/components/ui/languageSelect";
+import { translateFullDocument } from "@/lib/ai/translate";
 
 export default function WorkspacePage() {
   const [inputText, setInputText] = useState("");
@@ -28,16 +30,28 @@ export default function WorkspacePage() {
   const [copied, setCopied] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [translateLoading, setTranslateLoading] = useState(false);
+  const [sourceLang, setSourceLang] = useState<string | null>(null);
+  const [workingText, setWorkingText] = useState<string | null>(null);
   const [actionPlan, setActionPlan] = useState<string | null>(null);
   const [proTips, setProTips] = useState<string | null>(null);
-  const [translatedLang, setTranslatedLang] = useState<string | null>(null);
+  const [translatedDoc, setTranslatedDoc] = useState<string | null>(null);
 
   // state to track the language user intends to translate to
   const [userLang, setUserLang] = useState<string | "en">("en");
 
-  const handleCopy = () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async () => {
+    const textToCopy =
+      translatedDoc || "The complete translation will appear here...";
+
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy text:", err);
+      alert("Copy failed. Please try again.");
+    }
   };
 
   const handleFileUpload = async (
@@ -95,16 +109,33 @@ export default function WorkspacePage() {
 
     const result = await processDocument(inputText, userLang);
     if (result) {
-      setTranslatedLang(result.translatedLang);
+      // setTranslatedLang(result.translatedLang);
+      setWorkingText(result.workingText);
+      console.log(
+        "working text from understand workspace:",
+        result.workingText
+      );
+      setSourceLang(result.sourceLang);
+      console.log("source lang from understand workspace:", result.sourceLang);
       setActionPlan(result.planEnglish);
       setProTips(result.tipsEnglish);
-      // console.log("result in workspace.tsx: ", result);
-      // console.log("translated lang in workspace.tsx: ", result.translatedLang);
-      // console.log("action plan in workspace.tsx: ", result.planEnglish);
-      // console.log("pro tips in workspace.tsx: ", result.tipsEnglish);
     }
     setLoading(false);
     setSourceExpanded(false);
+  };
+
+  const handleTranslateClick = async () => {
+    if (!sourceLang) return;
+    setTranslateLoading(true);
+
+    const translated = await translateFullDocument(
+      inputText,
+      sourceLang,
+      userLang
+    );
+
+    setTranslatedDoc(translated);
+    setTranslateLoading(false);
   };
 
   return (
@@ -309,7 +340,7 @@ export default function WorkspacePage() {
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
                       <span className="text-white/60">
-                        Generating action plan...
+                        Generating Summary...
                       </span>
                     </div>
                   ) : actionPlan ? (
@@ -318,10 +349,39 @@ export default function WorkspacePage() {
                     </div>
                   ) : (
                     <p className="text-white/50 italic">
-                      No action plan generated yet. Click &quot;Understand&quot;
-                      to analyze your document.
+                      No summary generated yet. Click &quot;Understand&quot; to
+                      analyze your document.
                     </p>
                   )}
+                </div>
+              </div>
+
+              {/* Suggested Actions */}
+              <div className="p-8 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-white/10">
+                <div className="flex items-start gap-4">
+                  <Sparkles className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-lg font-medium mb-2">
+                      Suggested Pro Tips
+                    </h3>
+                    {loading ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-white/60">
+                          Generating Pro Tips...
+                        </span>
+                      </div>
+                    ) : proTips ? (
+                      <div className="prose prose-invert prose-sm max-w-none prose-headings:text-white prose-p:text-white/70 prose-strong:text-white prose-ul:text-white/70 prose-li:text-white/70">
+                        <ReactMarkdown>{proTips}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-white/60 font-light leading-relaxed">
+                        Based on this document, here are the recommended next
+                        steps you should consider taking.
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -339,46 +399,51 @@ export default function WorkspacePage() {
                       Complete text in your language
                     </p>
                   </div>
-                  <button
-                    onClick={handleCopy}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-sm"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="w-4 h-4 text-emerald-400" />
-                        <span className="text-emerald-400">Copied</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        Copy
-                      </>
-                    )}
-                  </button>
-                </div>
-                <div className="p-6 rounded-xl bg-white/[0.02] border border-white/5">
-                  <p className="text-white/60 leading-relaxed font-light">
-                    The complete translation will appear here, preserving the
-                    original structure and meaning while making it fully
-                    accessible in your preferred language. You can copy it and
-                    use it as needed.
-                  </p>
-                </div>
-              </div>
 
-              {/* Suggested Actions */}
-              <div className="p-8 rounded-2xl bg-gradient-to-br from-emerald-500/10 to-blue-500/10 border border-white/10">
-                <div className="flex items-start gap-4">
-                  <Sparkles className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-lg font-medium mb-2">
-                      Suggested Actions
-                    </h3>
-                    <p className="text-white/60 font-light leading-relaxed">
-                      Based on this document, here are the recommended next
-                      steps you should consider taking.
-                    </p>
+                  <div className="flex items-center gap-3">
+                    {/* Translate Button */}
+                    <button
+                      onClick={handleTranslateClick}
+                      disabled={translateLoading}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 transition-colors text-sm text-emerald-300 disabled:opacity-50"
+                    >
+                      {translateLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        </>
+                      ) : (
+                        <>
+                          <Languages className="w-4 h-4" />
+                          Translate
+                        </>
+                      )}
+                    </button>
+
+                    {/* Copy Button */}
+                    <button
+                      onClick={handleCopy}
+                      className="flex items-center gap-2 px-4 py-2 cursor-pointer rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-sm"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-4 h-4 text-emerald-400" />
+                          <span className="text-emerald-400">Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4" />
+                          Copy
+                        </>
+                      )}
+                    </button>
                   </div>
+                </div>
+                <div className="p-6 rounded-xl bg-white/[0.02] border border-white/5 max-h-[32rem] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                  <p className="text-white/60 leading-relaxed font-light whitespace-pre-wrap">
+                    {translatedDoc
+                      ? translatedDoc
+                      : "The complete translation will appear here, preserving the original structure and meaning while making it fully accessible in your preferred language. You can copy it and use it as needed. Please let the summary be generated before clicking the button."}
+                  </p>
                 </div>
               </div>
             </div>
