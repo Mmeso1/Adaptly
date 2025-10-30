@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { MessageSquare, X, Sparkles, Send } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { MessageSquare, X, Sparkles, Send, Loader2 } from "lucide-react";
+import {
+  initChatSession,
+  askQuestion,
+  destroyChatSession,
+} from "@/lib/ai/chatSession";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -11,36 +16,69 @@ interface ChatMessage {
 interface ChatDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  title?: string;
-  subtitle?: string;
-  placeholder?: string;
+  documentContext: string | null;
+  userLanguage: string;
 }
 
 export default function ChatDrawer({
   isOpen,
   onClose,
-  title = "Ask questions",
-  subtitle = "About your document",
-  placeholder = "Ask a question...",
+  documentContext,
+  userLanguage,
 }: ChatDrawerProps) {
+  const placeholder = "Ask me anything about your document...";
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [chatLoading, setChatLoading] = useState(false);
 
-  const handleSendMessage = () => {
+  useEffect(() => {
+    if (documentContext) {
+      initChatSession(documentContext, userLanguage);
+    }
+
+    return () => destroyChatSession();
+  }, [documentContext]);
+
+  const handleSendMessage = async () => {
     if (!chatMessage.trim()) return;
 
-    const newMessages: ChatMessage[] = [
-      ...chatHistory,
-      { role: "user", content: chatMessage },
-      {
-        role: "assistant",
-        content:
-          "This is a sample response. In a real implementation, this would come from your AI service.",
-      },
-    ];
-
-    setChatHistory(newMessages);
+    const userMsg: ChatMessage = { role: "user", content: chatMessage };
+    setChatHistory((prev) => [...prev, userMsg]);
     setChatMessage("");
+    setChatLoading(true);
+
+    const assistantMsg: ChatMessage = { role: "assistant", content: "" };
+    setChatHistory((prev) => [...prev, assistantMsg]);
+
+    try {
+      let lastUpdate = 0;
+      await askQuestion(chatMessage, (chunk) => {
+        const now = Date.now();
+        if (now - lastUpdate > 100) {
+          setChatHistory((prev) => {
+            const updated = [...prev];
+            const lastIndex = updated.length - 1;
+            if (updated[lastIndex]?.role === "assistant") {
+              updated[lastIndex] = { ...updated[lastIndex], content: chunk };
+            }
+            return updated;
+          });
+          lastUpdate = now;
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            "⚠️ Sorry, something went wrong. The model might not be ready or available yet.",
+        },
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -49,6 +87,12 @@ export default function ChatDrawer({
       handleSendMessage();
     }
   };
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatHistory]);
 
   return (
     <aside
@@ -63,10 +107,10 @@ export default function ChatDrawer({
             <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
               <MessageSquare className="w-5 h-5 text-blue-400" />
             </div>
-            <div>
+            {/* <div>
               <h3 className="font-medium">{title}</h3>
               <p className="text-xs text-white/40">{subtitle}</p>
-            </div>
+            </div> */}
           </div>
           <button
             onClick={onClose}
@@ -114,6 +158,7 @@ export default function ChatDrawer({
               </div>
             ))
           )}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Chat Input */}

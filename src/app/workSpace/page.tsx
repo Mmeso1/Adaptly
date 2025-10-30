@@ -451,7 +451,12 @@ export default function WorkspacePage() {
         </main>
 
         {/* Chat Drawer */}
-        <ChatDrawer isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+        <ChatDrawer
+          isOpen={chatOpen}
+          onClose={() => setChatOpen(false)}
+          documentContext={actionPlan}
+          userLanguage={userLang}
+        />
       </div>
     </div>
   );
