@@ -25,13 +25,6 @@ export default function Home() {
           </div>
           <span className="text-2xl font-light tracking-tight">Adaptly</span>
         </div>
-        <Link
-          href="/workspace"
-          // onClick={onGetStarted}
-          className="px-5 py-2 text-sm text-white/80 hover:text-white transition-colors"
-        >
-          Sign in
-        </Link>
       </header>
 
       {/* Hero Section */}
