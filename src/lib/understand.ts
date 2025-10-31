@@ -48,7 +48,7 @@ export async function processDocument(text: string, userSelectedLang: string) {
   // 2. Translate langugae to English if not in English
   let workingText = text;
   console.log("detected language 2: ", sourceLang);
-  if (sourceLang !== "en") {
+  if (sourceLang !== "en" && translator) {
     const translated = await safeCall(() => translateText(text, translator));
     workingText = translated || text;
     // console.log("Translated txt:", workingText);

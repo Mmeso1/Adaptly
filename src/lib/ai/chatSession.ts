@@ -1,7 +1,46 @@
 // ai/chatSession.ts
 
-let chatSession: any = null;
-declare const LanguageModel: any;
+interface ChatMessage {
+  role: "user" | "system" | "assistant";
+  content: string;
+}
+
+/** Defines the progress event object received during a model download. */
+interface DownloadProgressEvent {
+  loaded: number;
+  total?: number;
+}
+
+/** Defines the object used to monitor download progress. */
+interface MonitorCallback {
+  addEventListener(
+    event: "downloadprogress",
+    callback: (e: DownloadProgressEvent) => void
+  ): void;
+}
+
+/** Defines the active chat session object returned by LanguageModel.create(). */
+interface ChatSession {
+  promptStreaming(
+    messages: ChatMessage[],
+    options?: { signal?: AbortSignal }
+  ): AsyncIterable<string>;
+  destroy(): void;
+}
+
+/** Defines the global LanguageModel API object. */
+interface LanguageModelApi {
+  availability(): Promise<"available" | "unavailable">;
+  create(options: {
+    monitor: (m: MonitorCallback) => void;
+    expectedInputs: { type: "text"; languages: string[] }[];
+    expectedOutputs: { type: "text"; languages: string[] }[];
+    initialPrompts: ChatMessage[];
+  }): Promise<ChatSession>;
+}
+
+let chatSession: ChatSession | null = null;
+declare const LanguageModel: LanguageModelApi;
 
 export async function initChatSession(
   documentSummary: string,
@@ -19,8 +58,8 @@ export async function initChatSession(
 
     // Create session with initial context
     chatSession = await LanguageModel.create({
-      monitor(m: any) {
-        m.addEventListener("downloadprogress", (e: any) => {
+      monitor(m: MonitorCallback) {
+        m.addEventListener("downloadprogress", (e: DownloadProgressEvent) => {
           console.log(
             `Prompt Model Downloaded ${(e.loaded * 100).toFixed(0)}%`
           );

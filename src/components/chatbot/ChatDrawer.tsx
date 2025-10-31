@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MessageSquare, X, Sparkles, Send, Loader2 } from "lucide-react";
+import { MessageSquare, X, Sparkles, Send } from "lucide-react";
 import {
   initChatSession,
   askQuestion,
@@ -45,7 +45,7 @@ export default function ChatDrawer({ isOpen, onClose }: ChatDrawerProps) {
     }
 
     return () => destroyChatSession();
-  }, [documentContext]);
+  }, [documentContext, userLang]);
 
   const showToast = (message: string, duration = 3000) => {
     setToastMessage(message);
@@ -94,7 +94,7 @@ export default function ChatDrawer({ isOpen, onClose }: ChatDrawerProps) {
         controller.signal
       );
     } catch (error) {
-      if ((error as any).name === "AbortError") {
+      if ((error as Error).name === "AbortError") {
         console.log("Chat generation stopped by user.");
       } else {
         console.error(error);

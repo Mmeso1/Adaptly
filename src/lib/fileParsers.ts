@@ -1,4 +1,7 @@
 // src/lib/fileParsers.ts
+interface TextContentItem {
+  str: string;
+}
 
 export const parseTxtFile = async (file: File) => {
   return new Promise<string>((resolve, reject) => {
@@ -24,7 +27,9 @@ export const parsePdfFile = async (file: File) => {
   for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
     const page = await pdf.getPage(pageNum);
     const textContent = await page.getTextContent();
-    const pageText = textContent.items.map((item: any) => item.str).join(" ");
+    const pageText = textContent.items
+      .map((item: TextContentItem) => item.str)
+      .join(" ");
     fullText += pageText + "\n";
   }
 

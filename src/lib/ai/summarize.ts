@@ -1,6 +1,34 @@
-declare const Summarizer: any;
+interface DownloadProgressEvent {
+  loaded: number;
+  total?: number;
+}
 
-export async function createSummarizer() {
+interface MonitorCallback {
+  addEventListener(
+    event: "downloadprogress",
+    callback: (e: DownloadProgressEvent) => void
+  ): void;
+}
+
+interface SummarizerSession {
+  summarize(text: string, options?: { context?: string }): Promise<string>;
+}
+
+interface SummarizerApi {
+  availability(): Promise<"available" | "unavailable">;
+  create(options: {
+    sharedContext: string;
+    type: "key-points" | "summary";
+    format: "markdown" | "text";
+    length: "short" | "long";
+    outputLanguage: string;
+    monitor: (m: MonitorCallback) => void;
+  }): Promise<SummarizerSession>;
+}
+
+declare const Summarizer: SummarizerApi;
+
+export async function createSummarizer(): Promise<SummarizerSession> {
   if (!("Summarizer" in self)) {
     throw new Error("Summarizer API not available in this browser.");
   }
@@ -18,8 +46,8 @@ export async function createSummarizer() {
     format: "markdown",
     length: "long",
     outputLanguage: "en",
-    monitor(m: any) {
-      m.addEventListener("downloadprogress", (e: any) => {
+    monitor(m: MonitorCallback) {
+      m.addEventListener("downloadprogress", (e: DownloadProgressEvent) => {
         console.log(
           `Summarizer model download: ${(e.loaded * 100).toFixed(0)}%`
         );
@@ -30,7 +58,7 @@ export async function createSummarizer() {
 }
 
 export async function summarizeText(
-  summarizer: any,
+  summarizer: SummarizerSession,
   text: string
 ): Promise<string> {
   try {

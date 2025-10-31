@@ -1,8 +1,37 @@
-import { text } from "stream/consumers";
+interface DownloadProgressEvent {
+  loaded: number;
+  total?: number;
+}
 
-declare const Translator: any;
+interface MonitorCallback {
+  addEventListener(
+    event: "downloadprogress",
+    callback: (e: DownloadProgressEvent) => void
+  ): void;
+}
 
-export async function createTranslator(sourceLang: string, targetLang: string) {
+interface TranslatorSession {
+  translate(text: string): Promise<string>;
+}
+
+interface TranslatorApi {
+  availability(options: {
+    sourceLanguage: string;
+    targetLanguage: string;
+  }): Promise<"available" | "unavailable">;
+  create(options: {
+    sourceLanguage: string;
+    targetLanguage: string;
+    monitor: (m: MonitorCallback) => void;
+  }): Promise<TranslatorSession>;
+}
+
+declare const Translator: TranslatorApi;
+
+export async function createTranslator(
+  sourceLang: string,
+  targetLang: string
+): Promise<TranslatorSession> {
   if (!("Translator" in self)) {
     throw new Error("Translator API not available in this browser.");
   }
@@ -22,8 +51,8 @@ export async function createTranslator(sourceLang: string, targetLang: string) {
   const translator = await Translator.create({
     sourceLanguage: sourceLang,
     targetLanguage: targetLang,
-    monitor(m: any) {
-      m.addEventListener("downloadprogress", (e: any) => {
+    monitor(m: MonitorCallback) {
+      m.addEventListener("downloadprogress", (e: DownloadProgressEvent) => {
         console.log(`Downloaded ${e.loaded * 100}%`);
       });
     },
@@ -34,7 +63,7 @@ export async function createTranslator(sourceLang: string, targetLang: string) {
 
 export async function translateText(
   text: string,
-  translator: any
+  translator: TranslatorSession
 ): Promise<string> {
   if (!translator || typeof translator.translate !== "function") {
     throw new Error("Translator is not ready yet. Please try again later.");

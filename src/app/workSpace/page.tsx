@@ -32,7 +32,7 @@ export default function WorkspacePage() {
   const [loading, setLoading] = useState(false);
   const [translateLoading, setTranslateLoading] = useState(false);
   const [sourceLang, setSourceLang] = useState<string | null>(null);
-  const [workingText, setWorkingText] = useState<string | null>(null);
+  const [, setWorkingText] = useState<string | null>(null);
   const [actionPlan, setActionPlan] = useState<string | null>(null);
   const [proTips, setProTips] = useState<string | null>(null);
   const [translatedDoc, setTranslatedDoc] = useState<string | null>(null);

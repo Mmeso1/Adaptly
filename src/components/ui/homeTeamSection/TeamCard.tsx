@@ -1,4 +1,5 @@
 import { LucideIcon } from "lucide-react";
+import Image from "next/image";
 
 interface SocialLink {
   icon: LucideIcon;
@@ -28,7 +29,7 @@ export default function TeamCard({
       <div className="p-8 rounded-2xl bg-[#111111] border border-white/5 hover:border-white/10 transition-all text-center space-y-4">
         {/* Avatar */}
         {imageUrl ? (
-          <img
+          <Image
             src={imageUrl}
             alt={name}
             className="w-24 h-24 rounded-2xl mx-auto object-cover"

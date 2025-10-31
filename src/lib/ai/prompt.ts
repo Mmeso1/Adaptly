@@ -1,8 +1,38 @@
-declare const LanguageModel: any;
+interface DownloadProgressEvent {
+  loaded: number;
+  total?: number;
+}
+
+interface MonitorCallback {
+  addEventListener(
+    event: "downloadprogress",
+    callback: (e: DownloadProgressEvent) => void
+  ): void;
+}
+
+interface PromptModelSession {
+  prompt(
+    prompt: string,
+    options?: { systemInstruction?: string }
+  ): Promise<string>;
+  destroy(): void;
+}
+
+interface LanguageModelApi {
+  availability(): Promise<"available" | "unavailable">;
+  create(options: {
+    monitor: (m: MonitorCallback) => void;
+    expectedInputs: { type: "text"; languages: string[] }[];
+    expectedOutputs: { type: "text"; languages: string[] }[];
+  }): Promise<PromptModelSession>;
+}
+
+declare const LanguageModel: LanguageModelApi;
 
 // --- 1. Model Creation (CRITICAL for User Gesture) ---
-// This function must be called immediately when the user clicks 'Analyze'.
-export async function createPromptModel(targetLanguage: string) {
+export async function createPromptModel(
+  targetLanguage: string
+): Promise<PromptModelSession | null> {
   console.log("Initializing Prompt (Gemini Nano) Model...");
   try {
     // Check availability first (optional but good practice)
@@ -14,26 +44,19 @@ export async function createPromptModel(targetLanguage: string) {
       );
     }
 
-    // Create the session. This is the call that requires the user gesture
-    // for model download/initialization.
     const session = await LanguageModel.create({
-      // Monitor is essential for showing the user that a model is downloading
-      monitor(m: any) {
-        m.addEventListener("downloadprogress", (e: any) => {
+      monitor(m: MonitorCallback) {
+        m.addEventListener("downloadprogress", (e: DownloadProgressEvent) => {
           console.log(
             `Prompt Model Downloaded ${(e.loaded * 100).toFixed(0)}%`
           );
         });
       },
-      // Setting expected languages confirms the model supports our use case
       expectedInputs: [{ type: "text", languages: ["en"] }],
-      // We expect the final output to be in the user's language
       expectedOutputs: [{ type: "text", languages: [`${targetLanguage}`] }],
     });
-    // console.log("prompt session created:", session);
     return session;
   } catch (error) {
-    // If the error is NotAllowedError, it will be handled by the caller (understand.ts)
     console.error("Error creating Prompt model session:", error);
     return null;
   }
@@ -41,7 +64,7 @@ export async function createPromptModel(targetLanguage: string) {
 
 // --- 2. Task: Generate Action Plan (Structured Reasoning) ---
 export async function generateActionPlan(
-  promptModel: any,
+  promptModel: PromptModelSession,
   documentText: string,
   targetLanguage: string
 ): Promise<string> {
@@ -76,7 +99,7 @@ export async function generateActionPlan(
 
 // --- 3. Task: Generate Pro-Tips (Creative Reasoning) ---
 export async function generateProTips(
-  promptModel: any,
+  promptModel: PromptModelSession,
   documentText: string,
   targetLanguage: string
 ): Promise<string> {

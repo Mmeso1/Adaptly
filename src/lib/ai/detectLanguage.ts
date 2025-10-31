@@ -1,6 +1,23 @@
 // Import or define LanguageDetector depending on your environment.
 // Example for a browser global (if available):
-declare const LanguageDetector: any;
+declare const LanguageDetector: {
+  availability(): Promise<"available" | "unavailable">;
+  create(config: { monitor?: (m: MonitorCallback) => void }): Promise<{
+    detect(text: string): Promise<Array<{ detectedLanguage: string }>>;
+  }>;
+};
+
+interface DownloadProgressEvent {
+  loaded: number;
+  total?: number;
+}
+
+interface MonitorCallback {
+  addEventListener(
+    event: "downloadprogress",
+    callback: (e: DownloadProgressEvent) => void
+  ): void;
+}
 
 export async function detectLanguage(text: string): Promise<string> {
   const DEFAULT_LANG = "en";
@@ -22,8 +39,8 @@ export async function detectLanguage(text: string): Promise<string> {
 
     // 3. Instantiate the language detector
     const detector = await LanguageDetector.create({
-      monitor(m: any) {
-        m.addEventListener("downloadprogress", (e: { loaded: number }) => {
+      monitor(m: MonitorCallback) {
+        m.addEventListener("downloadprogress", (e: DownloadProgressEvent) => {
           console.log(`Downloaded ${e.loaded * 100}%`);
         });
       },

@@ -1,8 +1,15 @@
-import { Globe, MessageCircle, FileCheck, Zap, Shield } from "lucide-react";
+import {
+  Globe,
+  MessageCircle,
+  FileCheck,
+  Zap,
+  Shield,
+  LucideIcon,
+} from "lucide-react";
 import FeatureCard from "./FeatureCard";
 
 interface Feature {
-  icon: any;
+  icon: LucideIcon;
   title: string;
   description: string;
   iconColor: "blue" | "emerald" | "purple";
