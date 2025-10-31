@@ -50,17 +50,20 @@ export async function initChatSession(
 
 export async function askQuestion(
   question: string,
-  onStreamChunk: (chunk: string) => void
+  onStreamChunk: (chunk: string) => void,
+  signal?: AbortSignal
 ): Promise<string> {
   if (!chatSession) throw new Error("Chat session not initialized.");
+  if (!question || question.trim().length === 0)
+    throw new Error("No question provided.");
 
-  const stream = await chatSession.promptStreaming([
-    { role: "user", content: question },
-  ]);
+  const stream = await chatSession.promptStreaming(
+    [{ role: "user", content: question.trim() }],
+    { signal }
+  );
 
   let response = "";
   for await (const chunk of stream) {
-    console.log(chunk);
     response += chunk;
     if (onStreamChunk) onStreamChunk(response);
   }

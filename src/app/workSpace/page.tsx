@@ -62,6 +62,16 @@ export default function WorkspacePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // ✅ Clear old document context immediately
+    localStorage.removeItem("documentContext");
+    localStorage.removeItem("userLang");
+
+    // Reset UI state
+    setShowResults(false);
+    setActionPlan("");
+    setProTips("");
+    setTranslatedDoc("");
+
     const fileName = file.name.toLowerCase();
     const fileType = file.type;
     setFileName(file.name);
@@ -109,16 +119,16 @@ export default function WorkspacePage() {
 
     const result = await processDocument(inputText, userLang);
     if (result) {
-      // setTranslatedLang(result.translatedLang);
-      setWorkingText(result.workingText);
-      console.log(
-        "working text from understand workspace:",
-        result.workingText
-      );
-      setSourceLang(result.sourceLang);
-      console.log("source lang from understand workspace:", result.sourceLang);
-      setActionPlan(result.planEnglish);
-      setProTips(result.tipsEnglish);
+      const { workingText, sourceLang, planEnglish, tipsEnglish } = result;
+
+      setWorkingText(workingText);
+      setSourceLang(sourceLang);
+      setActionPlan(planEnglish);
+      setProTips(tipsEnglish);
+
+      // ✅ Use result.planEnglish directly — not actionPlan
+      localStorage.setItem("documentContext", planEnglish || "");
+      localStorage.setItem("userLang", userLang);
     }
     setLoading(false);
     setSourceExpanded(false);
@@ -136,6 +146,30 @@ export default function WorkspacePage() {
 
     setTranslatedDoc(translated);
     setTranslateLoading(false);
+  };
+
+  const handleReplaceDocument = () => {
+    // 1. Reset results and document content
+    setInputText("");
+    setFileName("");
+    setActionPlan(null);
+    setProTips(null);
+    setTranslatedDoc(null);
+    setWorkingText("");
+    setSourceLang(null);
+
+    // 2. Reset UI state flags
+    setShowResults(false); // Crucial: switches back to input view
+    setLoading(false);
+    setTranslateLoading(false);
+    setCopied(false);
+
+    // 3. Clear local storage context
+    localStorage.removeItem("documentContext");
+    localStorage.removeItem("userLang");
+
+    // Optional: provide user feedback or scroll to top
+    console.log("Document replaced, ready for new input.");
   };
 
   return (
@@ -301,7 +335,10 @@ export default function WorkspacePage() {
                       </p>
                     </div>
                     <div className="flex gap-3">
-                      <button className="flex-1 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-sm">
+                      <button
+                        className="flex-1 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors text-sm"
+                        onClick={handleReplaceDocument}
+                      >
                         Replace document
                       </button>
                       <button
@@ -451,12 +488,7 @@ export default function WorkspacePage() {
         </main>
 
         {/* Chat Drawer */}
-        <ChatDrawer
-          isOpen={chatOpen}
-          onClose={() => setChatOpen(false)}
-          documentContext={actionPlan}
-          userLanguage={userLang}
-        />
+        <ChatDrawer isOpen={chatOpen} onClose={() => setChatOpen(false)} />
       </div>
     </div>
   );

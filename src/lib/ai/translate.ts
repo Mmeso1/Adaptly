@@ -28,6 +28,7 @@ export async function createTranslator(sourceLang: string, targetLang: string) {
       });
     },
   });
+
   return translator;
 }
 
@@ -35,8 +36,10 @@ export async function translateText(
   text: string,
   translator: any
 ): Promise<string> {
+  if (!translator || typeof translator.translate !== "function") {
+    throw new Error("Translator is not ready yet. Please try again later.");
+  }
   const result = await translator.translate(text);
-  //   console.log("Translated text in tfn:", result);
   return result;
 }
 

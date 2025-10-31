@@ -47,8 +47,7 @@ export async function generateActionPlan(
 ): Promise<string> {
   const systemInstruction = `
     You are a multilingual content summarization expert.
-    Your job is to help users understand complex or foreign-language text by rewriting it in a clear, simple, and structured way — without losing important meaning in the specified target language.  ALL OUTPUT MUST BE IN THE LANGUAGE SPECIFIED by the outputLanguage 
-    parameter, which is ${targetLanguage}.
+    Your job is to help users understand complex or foreign-language text by rewriting it in a clear, simple, and structured way — without losing important meaning in the specified target language.
 
     Guidelines:
     - Summarize the document in a way that captures its **main ideas, important points, and tone**.
@@ -64,6 +63,7 @@ export async function generateActionPlan(
   const userPrompt = `
     Summarize the following text in a clear, easy-to-understand way.
     The goal is for a non-native speaker to grasp the key meaning, purpose, and context.
+    ALL OUTPUT MUST BE in the following target language: ${targetLanguage}.
 
     DOCUMENT:${documentText}`;
   const result = await promptModel.prompt(userPrompt, {

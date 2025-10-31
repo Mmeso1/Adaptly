@@ -70,12 +70,6 @@ export async function processDocument(text: string, userSelectedLang: string) {
   const tipsEnglish =
     proTipsEnglish || "Unable to generate pro tips. Guidance failed.";
 
-  // 5. Final Outputs Translation (Translator API: High-speed Utility)
-  // Translate the final English outputs back to the user's target language (userLang).
-  const finalActionPlan = await safeCall(() =>
-    translateText(translator, workingText)
-  );
-
   return {
     workingText,
     sourceLang,

@@ -16,31 +16,51 @@ interface ChatMessage {
 interface ChatDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  documentContext: string | null;
-  userLanguage: string;
 }
 
-export default function ChatDrawer({
-  isOpen,
-  onClose,
-  documentContext,
-  userLanguage,
-}: ChatDrawerProps) {
+export default function ChatDrawer({ isOpen, onClose }: ChatDrawerProps) {
   const placeholder = "Ask me anything about your document...";
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
+  const [abortController, setAbortController] =
+    useState<AbortController | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [documentContext, setDocumentContext] = useState<string | null>(null);
+  const [userLang, setUserLang] = useState<string>("en");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const context = localStorage.getItem("documentContext");
+      const language = localStorage.getItem("userLang") || "en";
+
+      setDocumentContext(context);
+      setUserLang(language);
+    }
+  }, []);
 
   useEffect(() => {
     if (documentContext) {
-      initChatSession(documentContext, userLanguage);
+      initChatSession(documentContext, userLang);
     }
 
     return () => destroyChatSession();
   }, [documentContext]);
 
+  const showToast = (message: string, duration = 3000) => {
+    setToastMessage(message);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, duration);
+  };
+
   const handleSendMessage = async () => {
-    if (!chatMessage.trim()) return;
+    if (!documentContext || documentContext.trim().length === 0) {
+      showToast("⏳ Please wait — I’m still reading your document summary.");
+      return;
+    }
+
+    if (!chatMessage || !chatMessage.trim()) return;
 
     const userMsg: ChatMessage = { role: "user", content: chatMessage };
     setChatHistory((prev) => [...prev, userMsg]);
@@ -50,32 +70,43 @@ export default function ChatDrawer({
     const assistantMsg: ChatMessage = { role: "assistant", content: "" };
     setChatHistory((prev) => [...prev, assistantMsg]);
 
+    const controller = new AbortController();
+    setAbortController(controller);
+
     try {
       let lastUpdate = 0;
-      await askQuestion(chatMessage, (chunk) => {
-        const now = Date.now();
-        if (now - lastUpdate > 100) {
-          setChatHistory((prev) => {
-            const updated = [...prev];
-            const lastIndex = updated.length - 1;
-            if (updated[lastIndex]?.role === "assistant") {
-              updated[lastIndex] = { ...updated[lastIndex], content: chunk };
-            }
-            return updated;
-          });
-          lastUpdate = now;
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      setChatHistory((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "⚠️ Sorry, something went wrong. The model might not be ready or available yet.",
+      await askQuestion(
+        chatMessage,
+        (chunk) => {
+          const now = Date.now();
+          if (now - lastUpdate > 100) {
+            setChatHistory((prev) => {
+              const updated = [...prev];
+              const lastIndex = updated.length - 1;
+              if (updated[lastIndex]?.role === "assistant") {
+                updated[lastIndex] = { ...updated[lastIndex], content: chunk };
+              }
+              return updated;
+            });
+            lastUpdate = now;
+          }
         },
-      ]);
+        controller.signal
+      );
+    } catch (error) {
+      if ((error as any).name === "AbortError") {
+        console.log("Chat generation stopped by user.");
+      } else {
+        console.error(error);
+        setChatHistory((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "⚠️ Sorry, something went wrong. The model might not be ready or available yet.",
+          },
+        ]);
+      }
     } finally {
       setChatLoading(false);
     }
@@ -96,7 +127,7 @@ export default function ChatDrawer({
 
   return (
     <aside
-      className={`fixed right-0 top-0 h-screen w-96 bg-[#0A0A0A] border-l border-white/10 transform transition-transform duration-300 z-30 ${
+      className={`fixed right-0 top-0 h-screen w-[440px] bg-[#0A0A0A] border-l border-white/10 transform transition-transform duration-300 z-30 ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
@@ -121,7 +152,7 @@ export default function ChatDrawer({
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4">
+        <div className="flex-1 overflow-y-auto px-3 py-6 space-y-4">
           {chatHistory.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4">
@@ -141,7 +172,11 @@ export default function ChatDrawer({
               >
                 {message.role === "assistant" && (
                   <div className="w-8 h-8 rounded-lg bg-blue-500/10 border border-blue-500/20 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="w-4 h-4 text-blue-400" />
+                    <Sparkles
+                      className={`w-4 h-4 text-blue-400 ${
+                        chatLoading ? "animate-pulse" : ""
+                      }`}
+                    />
                   </div>
                 )}
                 <div
@@ -172,16 +207,32 @@ export default function ChatDrawer({
               placeholder={placeholder}
               className="flex-1 px-4 py-3 bg-[#111111] border border-white/10 rounded-xl focus:outline-none focus:border-white/20 text-white/90 placeholder:text-white/30 text-sm font-light"
             />
-            <button
-              onClick={handleSendMessage}
-              disabled={!chatMessage.trim()}
-              className="w-12 h-12 rounded-xl bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors flex-shrink-0"
-            >
-              <Send className="w-5 h-5" />
-            </button>
+            {chatLoading ? (
+              <button
+                onClick={() => abortController?.abort()}
+                className="w-12 h-12 rounded-xl bg-red-500/10 hover:bg-red-500/20 
+               border border-red-500/20 flex items-center justify-center"
+              >
+                <X className="w-5 h-5 text-red-400" />
+              </button>
+            ) : (
+              <button
+                onClick={handleSendMessage}
+                disabled={!chatMessage.trim() || !documentContext}
+                className="w-12 h-12 rounded-xl bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors flex-shrink-0"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/10 border border-white/20 text-white/90 px-4 py-3 rounded-xl text-sm backdrop-blur-md shadow-lg animate-fade-in">
+          {toastMessage}
+        </div>
+      )}
     </aside>
   );
 }
