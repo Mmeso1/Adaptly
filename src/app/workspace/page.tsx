@@ -62,16 +62,6 @@ export default function WorkspacePage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // ✅ Clear old document context immediately
-    localStorage.removeItem("documentContext");
-    localStorage.removeItem("userLang");
-
-    // Reset UI state
-    setShowResults(false);
-    setActionPlan("");
-    setProTips("");
-    setTranslatedDoc("");
-
     const fileName = file.name.toLowerCase();
     const fileType = file.type;
     setFileName(file.name);
@@ -116,6 +106,15 @@ export default function WorkspacePage() {
       return alert("Please upload a document or paste text.");
     setShowResults(true);
     setLoading(true);
+
+    // ✅ Clear old document context immediately
+    localStorage.removeItem("documentContext");
+    localStorage.removeItem("userLang");
+
+    // Reset UI state
+    setActionPlan("");
+    setProTips("");
+    setTranslatedDoc("");
 
     const result = await processDocument(inputText, userLang);
     if (result) {
